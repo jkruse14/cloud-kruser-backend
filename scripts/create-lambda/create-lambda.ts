@@ -25,7 +25,7 @@ describe('${pascalName}Service', () => {
       providers: [${pascalName}Service],
     }).compile();
 
-    service = module.get<HelloService>(${pascalName}Service);
+    service = module.get<${pascalName}>(${pascalName}Service);
   });
 
   it('should be defined', () => {
