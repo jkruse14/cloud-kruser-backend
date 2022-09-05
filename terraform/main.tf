@@ -166,3 +166,39 @@ resource "aws_acm_certificate_validation" "cert_validation" {
   certificate_arn         = aws_acm_certificate.com_cert.arn
   validation_record_fqdns = [for record in aws_route53_record.cloud_kruser_record : record.fqdn]
 }
+
+resource "aws_iam_role" "cloud_kruser_lambda_execution" {
+  name               = "cloud-kruser-lambda-execution-role"
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+module "lambda_functions" {
+  source = "./modules/lambda-functions"
+  lambdas = {
+    hello = {
+      role_arn      = aws_iam_role.cloud_kruser_lambda_execution.arn
+      function_name = "hello"
+      filename      = "../dist/hello-handler/lambda.zip"
+      environment_variables = {
+        foo = "bar"
+      }
+      memory_size = 128
+      timeout     = 3
+    }
+  }
+
+}
