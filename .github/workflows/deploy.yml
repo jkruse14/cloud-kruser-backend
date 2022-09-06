@@ -23,11 +23,12 @@ jobs:
       - uses: hashicorp/setup-terraform@v2
         with:
           cli_config_credentials_token: ${{ secrets.TERRAFORM_TOKEN }}
-      - run: cd ./terraform
       - run: pwd
       - name: Package lambdas
         run: ./.github/scripts/package-lambdas.sh
         shell: bash
+      - run: |
+          cd terraform
       - name: Terraform format
         id: tf-format
         run: terraform fmt -check -diff
