@@ -6,13 +6,13 @@ on:
       - test
       - dev
 jobs:
-  setup-env:
+  setup_env:
     uses: "./.github/workflows/set-base-env.yml"
   terraform:
     name: Terraform
     runs-on: ubuntu-latest
-    needs: ["setup-env"]
-    if: (contains(fromJson('["dev", "test", "prod"]'), needs.setup-env.outputs.env_name))
+    needs: setup-env
+    if: (contains(fromJson('["dev", "test", "prod"]'), needs.setup_env.outputs.env_name))
     defaults:
       run:
         working-directory: terraform
@@ -75,7 +75,7 @@ jobs:
       - name: Terraform Apply
         id: apply
         if: github.event_name == 'push'
-        run: terraform apply -auto-approve -var-file=${{needs.setup-env.outputs.env_name}}.tfvars
+        run: terraform apply -auto-approve -var-file=${{needs.setup_env.outputs.env_name}}.tfvars
         working-directory: ${{inputs.working-directory}}/terraform
         shell: bash
         # env:

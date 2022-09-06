@@ -1,6 +1,19 @@
 name: Set basic environment variables
 on:
-  - workflow_call
+  workflow_call:
+    outputs:
+      env_name:
+        description: "Name of the environment: dev, test, prod"
+        value: ${{ jobs.setup-env.outputs.env}}
+      service:
+        description: "Name of the service/project"
+        value: ${{ jobs.setup-env.outputs.service }}
+      aws_region:
+        description: "Name of AWS Region to use"
+        value: ${{ jobs.setup-env.outputs.region }}
+      aws_account_id:
+        description: "Name of AWS account to use"
+        value: ${{ jobs.setup-env.outputs.aws_account_id}}
 jobs:
   setup-env:
     runs-on: ubuntu-latest
