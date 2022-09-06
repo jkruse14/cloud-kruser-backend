@@ -28,7 +28,8 @@ jobs:
         run: ./.github/scripts/package-lambdas.sh
         shell: bash
       - run: |
-          cd terraform
+          cd ./terraform
+          pwd
       - name: Terraform format
         id: tf-format
         run: terraform fmt -check -diff
