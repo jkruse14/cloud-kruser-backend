@@ -2,12 +2,12 @@ name: build-and-test
 on:
   push:
     paths:
-      - **.js
+      - '**.js'
     
   pull_request:
     types: [opened]
     paths: 
-      - **.js
+      - '**.js'
     branches:
       - master
       - test
