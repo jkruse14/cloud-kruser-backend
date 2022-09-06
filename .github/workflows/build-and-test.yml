@@ -1,13 +1,52 @@
 name: build-and-test
-on: [pull_request]
+on:
+  push:
+    paths:
+      - **.js
+    
+  pull_request:
+    types: [opened]
+    paths: 
+      - **.js
+    branches:
+      - master
+      - test
+      - dev
 jobs:
-  build-and-test:
+  setup-env:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Set env
+        id: set_env
+        run: |
+          echo "::set-output name=service::cloud-kruser-backend"
+          echo "::set-output name=region::us-east-1"
+          echo "::set-output name=aws_account_id::880482262674"
+          prod="${{ github.event.pull_request.base.ref == 'master' || github.ref == 'refs/heads/master' }}"
+          test="${{ github.event.pull_request.base.ref == 'test' || github.ref == 'refs/heads/test' }}"
+          dev="${{ github.event.pull_request.base.ref == 'dev' || github.ref == 'refs/heads/dev' }}"
+          if [ "$prod" = true ]; then
+            echo "::set-output name=env::prod"
+          elif [ "$test" = true ]; then
+            echo "::set-output name=env::test"
+          elif [ "$dev" = true ]; then
+            echo "::set-output name=env::dev"
+          else
+            echo "::set-output name=env::none"
+            echo "::set-output name=aws_account_id::none"
+          fi
+  build-and-test:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up NodeJS
+        uses: actions/setup-node@v3
         with:
           node-version: 16
-        run: yarn install --frozen-lockfile
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Build
+        run: npm i -g yarn && yarn install --frozen-lockfile
+      - name: Run unit tests
         run: yarn test
     
