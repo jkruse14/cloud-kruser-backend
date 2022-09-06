@@ -11,7 +11,7 @@ jobs:
   terraform:
     name: Terraform
     runs-on: ubuntu-latest
-    needs: setup-env
+    needs: setup_env
     if: (contains(fromJson('["dev", "test", "prod"]'), needs.setup_env.outputs.env_name))
     defaults:
       run:
