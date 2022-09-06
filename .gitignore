@@ -1,7 +1,9 @@
 # compiled output
 /dist
+**/dist
 node_modules/
 **/node_modules/
+**/lambda.zip
 
 .env
 .terraform*

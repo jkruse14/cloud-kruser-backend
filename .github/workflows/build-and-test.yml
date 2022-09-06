@@ -14,27 +14,7 @@ on:
       - dev
 jobs:
   setup-env:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set env
-        id: set_env
-        run: |
-          echo "::set-output name=service::cloud-kruser-backend"
-          echo "::set-output name=region::us-east-1"
-          echo "::set-output name=aws_account_id::880482262674"
-          prod="${{ github.event.pull_request.base.ref == 'master' || github.ref == 'refs/heads/master' }}"
-          test="${{ github.event.pull_request.base.ref == 'test' || github.ref == 'refs/heads/test' }}"
-          dev="${{ github.event.pull_request.base.ref == 'dev' || github.ref == 'refs/heads/dev' }}"
-          if [ "$prod" = true ]; then
-            echo "::set-output name=env::prod"
-          elif [ "$test" = true ]; then
-            echo "::set-output name=env::test"
-          elif [ "$dev" = true ]; then
-            echo "::set-output name=env::dev"
-          else
-            echo "::set-output name=env::none"
-            echo "::set-output name=aws_account_id::none"
-          fi
+    uses: "./.github/workflows/set-base-env.yml"
   build-and-test:
     name: build
     runs-on: ubuntu-latest

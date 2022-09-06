@@ -192,7 +192,7 @@ module "lambda_functions" {
     hello = {
       role_arn      = aws_iam_role.cloud_kruser_lambda_execution.arn
       function_name = "hello"
-      filename      = "../dist/hello-handler/lambda.zip"
+      filename      = "../src/lambdas/hello/dist/lambda.zip"
       environment_variables = {
         foo = "bar"
       }
