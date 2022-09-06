@@ -16,10 +16,10 @@ jobs:
     steps:
       - run: 'echo "env name: ${{needs.setup_env.outputs.env_name}}"'
         shell: bash
-      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
+      - uses: actions/checkout@v3
       - uses: hashicorp/setup-terraform@v2
         with:
           cli_config_credentials_token: ${{ secrets.TERRAFORM_TOKEN }}
@@ -28,8 +28,11 @@ jobs:
         run: ./.github/scripts/package-lambdas.sh
         shell: bash
       - run: |
+          ls
           cd ./terraform
           pwd
+          ls
+
       - name: Terraform format
         id: tf-format
         run: terraform fmt -check -diff
