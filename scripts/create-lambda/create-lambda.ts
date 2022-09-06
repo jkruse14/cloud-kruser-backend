@@ -34,8 +34,9 @@ describe('${pascalName}Service', () => {
 });
 `;
 
-  const handler = `import { Injectable } from '@nestjs/common';
-import { AbstractLambdaHandler } from '../../../lambda/abstract-lambda-handler';
+  const handler = `import { Inject, Injectable } from '@nestjs/common';
+import { AbstractLambdaHandler } from '../../abstract-lambda-handler';
+import { ${pascalName}Service } from './goodbye.service';
 
 export interface ${pascalName}Input {}
 
@@ -50,7 +51,9 @@ export class ${pascalName}Handler extends AbstractLambdaHandler<
 > {
   constructor(
     @Inject(${pascalName}Service) private readonly ${camelName}: ${pascalName},
-  ) {}
+  ) {
+    super();
+  }
   public async handle(input: ${pascalName}Input): Promise<${pascalName}Output> {}
 }
 `;

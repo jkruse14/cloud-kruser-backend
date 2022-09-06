@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GoodbyeService {
-  sendGoodbye(name: string): string {
+  async sendGoodbye(name: string): Promise<string> {
     return `Good bye, ${name}!`;
   }
 }

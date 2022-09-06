@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { AbstractLambdaHandler } from '../../../lambda/abstract-lambda-handler';
+import { Injectable, Inject } from '@nestjs/common';
+import { AbstractLambdaHandler } from '../../abstract-lambda-handler';
+import { GoodbyeService } from './goodbye.service';
 
 export interface GoodbyeInput {
   name: string;
@@ -16,8 +17,11 @@ export class GoodbyeHandler extends AbstractLambdaHandler<
 > {
   constructor(
     @Inject(GoodbyeService) private readonly goodbyeService: GoodbyeService,
-  ) {}
+  ) {
+    super();
+  }
   public async handle(input: GoodbyeInput): Promise<GoodbyeOutput> {
-    return this.goodbyeService.sendGoodbye(input.name);
+    const message = await this.goodbyeService.sendGoodbye(input.name);
+    return { message };
   }
 }

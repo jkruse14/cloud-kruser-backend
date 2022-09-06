@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AbstractLambdaHandler } from '../../../lambda/abstract-lambda-handler';
+import { AbstractLambdaHandler } from '../../abstract-lambda-handler';
 
 export interface HelloInput {
   name?: string;

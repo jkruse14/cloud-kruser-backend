@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { HelloHandler } from './hello-handler.controller';
+import { HelloHandler } from './hello.handler';
 import { HelloService } from './hello.service';
 
 @Module({
