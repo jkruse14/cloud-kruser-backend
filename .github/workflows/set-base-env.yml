@@ -4,19 +4,24 @@ on:
     outputs:
       env_name:
         description: "Name of the environment: dev, test, prod"
-        value: ${{ jobs.setup-env.outputs.env}}
+        value: ${{ jobs.setup-env.outputs.env_name}}
       service:
         description: "Name of the service/project"
         value: ${{ jobs.setup-env.outputs.service }}
       aws_region:
         description: "Name of AWS Region to use"
-        value: ${{ jobs.setup-env.outputs.region }}
+        value: ${{ jobs.setup-env.outputs.aws_region }}
       aws_account_id:
         description: "Name of AWS account to use"
         value: ${{ jobs.setup-env.outputs.aws_account_id}}
 jobs:
   setup-env:
     runs-on: ubuntu-latest
+    outputs:
+      env_name: ${{ steps.set_env.outputs.env }}
+      service: ${{ steps.set_env.outputs.service }}
+      aws_region: ${{ steps.set_env.outputs.region }}
+      aws_account_id: ${{ steps.set_env.outputs.aws_account_id }}
     steps:
       - name: Set env
         id: set_env
