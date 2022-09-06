@@ -1,15 +1,6 @@
 name: Set basic environment variables
 on:
-  push:
-    paths:
-      - "**.js"
-  pull_request:
-    branches:
-      - master
-      - test
-      - dev
-    paths:
-      - "**.js"
+  - workflow_call
 jobs:
   setup-env:
     runs-on: ubuntu-latest
