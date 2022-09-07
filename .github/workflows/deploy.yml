@@ -24,12 +24,12 @@ jobs:
         working-directory: terraform
     if: (contains(fromJson('["dev", "test", "prod"]'), needs.setup-env.outputs.env_name))
     steps:
+      - uses: actions/checkout@v3
       - run: 'echo "env name: ${{needs.setup-env.outputs.env_name}}"'
         shell: bash
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-      - uses: actions/checkout@v3
       - uses: hashicorp/setup-terraform@v2
         with:
           cli_config_credentials_token: ${{ secrets.TERRAFORM_TOKEN }}
