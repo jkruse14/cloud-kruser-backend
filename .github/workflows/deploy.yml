@@ -34,10 +34,6 @@ jobs:
         with:
           cli_config_credentials_token: ${{ secrets.TERRAFORM_TOKEN }}
       - run: pwd
-      - run: |
-          cd ./terraform
-          pwd
-          ls
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
