@@ -12,6 +12,7 @@ jobs:
     name: Package lambdas
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - run: ./.github/scripts/package-lambdas.sh
         shell: bash
   terraform:
