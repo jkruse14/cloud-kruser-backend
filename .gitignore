@@ -4,6 +4,15 @@
 node_modules/
 **/node_modules/
 **/lambda.zip
+**/*.zip
+
+# Yarn
+.yarn/*
+.yarn/cache/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
 
 .env
 .terraform*

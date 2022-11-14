@@ -186,19 +186,117 @@ resource "aws_iam_role" "cloud_kruser_lambda_execution" {
 EOF
 }
 
+resource "aws_iam_role" "cloud_kruser_lambda_execution_with_visitor_counter_write" {
+  name = "cloud-kruser-lambda-execution-role-with-visitor-counter-write"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+        Effect = "Allow"
+        Sid    = ""
+      }
+    ]
+  })
+  inline_policy {
+    name = "AccessTableAllIndexesOnVisitorCounter"
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Effect : "Allow"
+          Action : [
+            "dynamodb:PutItem",
+            "dynamodb:UpdateItem",
+            "dynamodb:DeleteItem",
+            "dynamodb:BatchWriteItem",
+            "dynamodb:GetItem",
+            "dynamodb:BatchGetItem",
+            "dynamodb:Scan",
+            "dynamodb:Query",
+            "dynamodb:ConditionCheckItem"
+          ],
+          Resource = [
+            "${resource.aws_dynamodb_table.visitor_counter.arn}",
+            "${resource.aws_dynamodb_table.visitor_counter.arn}/index/*"
+          ]
+        }
+      ]
+    })
+  }
+}
+
+# Lambda Relate IaC
+
+resource "aws_lambda_layer_version" "yarn_cache_resources" {
+  filename            = "../nodejs.zip"
+  layer_name          = "cloud-kruser-lambdas-yarn-cache"
+  compatible_runtimes = ["nodejs16.x"]
+  source_code_hash    = filebase64sha256("../nodejs.zip")
+}
+
 module "lambda_functions" {
-  source = "./modules/lambda-functions"
+  source      = "./modules/lambda-functions"
+  name_prefix = "cloud-kruser-lambdas"
   lambdas = {
     hello = {
       role_arn      = aws_iam_role.cloud_kruser_lambda_execution.arn
       function_name = "hello"
-      filename      = "../src/lambdas/hello/dist/lambda.zip"
+      filename      = "../packages//hello/lambda.zip"
+      handler       = "./hello/src/index.handle"
       environment_variables = {
-        foo = "bar"
+        DEFAULT_AWS_REGION = "us-east-1"
+        SETUP_PNP          = true
+      }
+      memory_size = 128
+      timeout     = 3
+    }
+
+    goodbye = {
+      role_arn      = aws_iam_role.cloud_kruser_lambda_execution.arn
+      function_name = "goodbye"
+      filename      = "../packages/goodbye/lambda.zip"
+      handler       = "./goodbye/src/index.handle"
+      environment_variables = {
+        DEFAULT_AWS_REGION = "us-east-1"
+        SETUP_PNP          = true
+      }
+      memory_size = 128
+      timeout     = 3
+    }
+    createVisitorCounterItem = {
+      role_arn      = aws_iam_role.cloud_kruser_lambda_execution_with_visitor_counter_write.arn
+      function_name = "create-visitor-counter-item"
+      filename      = "../packages/visitor-counter-create/lambda.zip"
+      handler       = "./visitor-counter-create/src/index.handle"
+      environment_variables = {
+        DEFAULT_AWS_REGION = "us-east-1"
+        SETUP_PNP          = true
       }
       memory_size = 128
       timeout     = 3
     }
   }
-
+  common_layers = [resource.aws_lambda_layer_version.yarn_cache_resources.arn]
 }
+
+# End Lambda Related Iac
+
+# DynamoDB Related IaC
+resource "aws_dynamodb_table" "visitor_counter" {
+  name         = "VistorCounter"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "visitorId"
+
+  attribute {
+    name = "visitorId"
+    type = "S"
+  }
+}
+
+# End DDB
+
+#  Begin APIG
